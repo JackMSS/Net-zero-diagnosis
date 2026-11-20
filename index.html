@@ -506,6 +506,9 @@
                   <div class="tot"><span>範疇一</span><b id="sumS1">—</b></div>
                   <div class="tot"><span>範疇二</span><b id="sumS2">—</b></div>
                   <div class="tot"><span>改善後年減碳</span><b id="sumCarbon">—</b></div>
+                  <div class="tot"><span>改善後年耗電</span><b id="sumAfterKwh">—</b></div>
+                  <div class="tot"><span>改善後年電費</span><b id="sumAfterFee">—</b></div>
+                  <div class="tot"><span>改善後總排放</span><b id="sumAfterTotal">—</b></div>
                 </div>
                 <p>
                   <button class="btn btn-orange" id="btnWord" type="button">↓ 下載 Word 報告書（.doc）</button>
@@ -1053,6 +1056,10 @@ document.getElementById("sumTotalT").textContent = fmt(inv.total,3)+" 公噸";
 document.getElementById("sumS1").textContent = fmt(inv.s1,3)+" 公噸";
 document.getElementById("sumS2").textContent = fmt(inv.s2,3)+" 公噸";
 document.getElementById("sumCarbon").textContent = fmt(at.carbon,3)+" 公噸";
+var afterKwh = num(S.elecKwhYear) - at.savedKwh;
+document.getElementById("sumAfterKwh").textContent = fmt(afterKwh)+" 度";
+document.getElementById("sumAfterFee").textContent = fmt(afterKwh*price)+" 元";
+document.getElementById("sumAfterTotal").textContent = fmt(inv.total-at.carbon,3)+" 公噸";
 var done1 =!!(S.companyName.trim() && (num(S.elecKwhYear)>0 || num(S.gasM3Year)>0 || num(S.lpgKgYear)>0 || S.vehicles.length>0 || S.boilers.length>0));
 var done2 = inv.lines.length>0;
 var done3 = S.siteEquipment.some(function(e){ return num(e.powerW)>0;});
@@ -1575,8 +1582,8 @@ h += '</tbody></table>';
 /* 五、報告總覽摘要 */
 h += '<h4>五、報告總覽摘要</h4>';
 var rate = inv.total>0 ? fmt(at.carbon/inv.total*100,2)+"%" : "—";
-h += '<div class="totgrid"><div class="tot"><span>全廠總排放量</span><b>'+fmt(inv.total,3)+' 公噸</b></div><div class="tot"><span>範疇一</span><b>'+fmt(inv.s1,3)+' 公噸</b></div><div class="tot"><span>範疇二</span><b>'+fmt(inv.s2,3)+' 公噸</b></div><div class="tot"><span>改善後年減碳</span><b>'+fmt(at.carbon,3)+' 公噸</b></div><div class="tot"><span>減碳率（年減碳 ÷ 總排放量）</span><b>'+rate+'</b></div><div class="tot"><span>改善後總排放量</span><b>'+fmt(inv.total-at.carbon,3)+' 公噸</b></div></div>';
-h += '<div class="steps"><ol><li><b>減碳率</b>：<span class="eq">年減碳 '+fmt(at.carbon,3)+' 公噸 ÷ 總排放量 '+fmt(inv.total,3)+' 公噸 × 100%</span> ＝ <span class="r">'+rate+'</span></li><li><b>改善後總排放量</b>：<span class="eq">總排放量 '+fmt(inv.total,3)+' 公噸 − 年減碳 '+fmt(at.carbon,3)+' 公噸</span> ＝ <span class="r">'+fmt(inv.total-at.carbon,3)+' 公噸</span></li></ol></div>';
+h += '<div class="totgrid"><div class="tot"><span>全廠總排放量</span><b>'+fmt(inv.total,3)+' 公噸</b></div><div class="tot"><span>範疇一</span><b>'+fmt(inv.s1,3)+' 公噸</b></div><div class="tot"><span>範疇二</span><b>'+fmt(inv.s2,3)+' 公噸</b></div><div class="tot"><span>改善後年減碳</span><b>'+fmt(at.carbon,3)+' 公噸</b></div><div class="tot"><span>改善後年耗電</span><b>'+fmt(num(S.elecKwhYear)-at.savedKwh)+' 度</b></div><div class="tot"><span>改善後年電費</span><b>'+fmt((num(S.elecKwhYear)-at.savedKwh)*price)+' 元</b></div><div class="tot"><span>減碳率（年減碳 ÷ 總排放量）</span><b>'+rate+'</b></div><div class="tot"><span>改善後總排放量</span><b>'+fmt(inv.total-at.carbon,3)+' 公噸</b></div></div>';
+h += '<div class="steps"><ol><li><b>改善後年耗電</b>：<span class="eq">年耗電 '+fmt(num(S.elecKwhYear))+' 度 − 年節電 '+fmt(at.savedKwh)+' 度</span> ＝ <span class="r">'+fmt(num(S.elecKwhYear)-at.savedKwh)+' 度</span></li><li><b>改善後年電費</b>：<span class="eq">改善後年耗電 '+fmt(num(S.elecKwhYear)-at.savedKwh)+' 度 × 電價 '+fmtPrice(price)+' 元／度</span> ＝ <span class="r">'+fmt((num(S.elecKwhYear)-at.savedKwh)*price)+' 元</span></li><li><b>減碳率</b>：<span class="eq">年減碳 '+fmt(at.carbon,3)+' 公噸 ÷ 總排放量 '+fmt(inv.total,3)+' 公噸 × 100%</span> ＝ <span class="r">'+rate+'</span></li><li><b>改善後總排放量</b>：<span class="eq">總排放量 '+fmt(inv.total,3)+' 公噸 − 年減碳 '+fmt(at.carbon,3)+' 公噸</span> ＝ <span class="r">'+fmt(inv.total-at.carbon,3)+' 公噸</span></li></ol></div>';
 h += '<p class="note">（本報告由「淨零碳排資訊診斷」平台自動彙整；係數來源：環境部溫室氣體排放係數管理表 6.0.4 版、IPCC AR6 GWP、113 年電力排放係數公告值。正式送件前請再核對最新公告係數與現場數據，並由診斷人員審核具名。）</p>';
 h += '</div>';
 h += '<div class="repbar bot"><button type="button" class="btn btn-ghost btn-sm" data-collapse="1">收合報告書</button></div>';

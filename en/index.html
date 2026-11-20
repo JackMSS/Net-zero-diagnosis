@@ -506,6 +506,9 @@
                   <div class="tot"><span>Scope 1</span><b id="sumS1">—</b></div>
                   <div class="tot"><span>Scope 2</span><b id="sumS2">—</b></div>
                   <div class="tot"><span>Annual GHG Reduction After Improvement</span><b id="sumCarbon">—</b></div>
+                  <div class="tot"><span>Annual Electricity Use After Improvement</span><b id="sumAfterKwh">—</b></div>
+                  <div class="tot"><span>Annual Electricity Cost After Improvement</span><b id="sumAfterFee">—</b></div>
+                  <div class="tot"><span>Total Emissions After Improvement</span><b id="sumAfterTotal">—</b></div>
                 </div>
                 <p>
                   <button class="btn btn-orange" id="btnWord" type="button">↓ Download Word Report (.doc)</button>
@@ -1041,6 +1044,10 @@ document.getElementById("sumTotalT").textContent = fmt(inv.total,3)+" t";
 document.getElementById("sumS1").textContent = fmt(inv.s1,3)+" t";
 document.getElementById("sumS2").textContent = fmt(inv.s2,3)+" t";
 document.getElementById("sumCarbon").textContent = fmt(at.carbon,3)+" t";
+var afterKwh = num(S.elecKwhYear) - at.savedKwh;
+document.getElementById("sumAfterKwh").textContent = fmt(afterKwh)+" kWh";
+document.getElementById("sumAfterFee").textContent = fmt(afterKwh*price)+" NT$";
+document.getElementById("sumAfterTotal").textContent = fmt(inv.total-at.carbon,3)+" t";
 var done1 =!!(S.companyName.trim() && (num(S.elecKwhYear)>0 || num(S.gasM3Year)>0 || num(S.lpgKgYear)>0 || S.vehicles.length>0 || S.boilers.length>0));
 var done2 = inv.lines.length>0;
 var done3 = S.siteEquipment.some(function(e){ return num(e.powerW)>0;});
@@ -1563,8 +1570,8 @@ h += '</tbody></table>';
 /* V. Report Overview Summary */
 h += '<h4>V. Report Overview Summary</h4>';
 var rate = inv.total>0 ? fmt(at.carbon/inv.total*100,2)+"%" : "—";
-h += '<div class="totgrid"><div class="tot"><span>Total Plant Emissions</span><b>'+fmt(inv.total,3)+' t</b></div><div class="tot"><span>Scope 1</span><b>'+fmt(inv.s1,3)+' t</b></div><div class="tot"><span>Scope 2</span><b>'+fmt(inv.s2,3)+' t</b></div><div class="tot"><span>Annual GHG Reduction After Improvement</span><b>'+fmt(at.carbon,3)+' t</b></div><div class="tot"><span>GHG Reduction Rate (Annual GHG Reduction ÷ Total Emissions)</span><b>'+rate+'</b></div><div class="tot"><span>Total Emissions After Improvement</span><b>'+fmt(inv.total-at.carbon,3)+' t</b></div></div>';
-h += '<div class="steps"><ol><li><b>GHG Reduction Rate</b>: <span class="eq">Annual GHG Reduction '+fmt(at.carbon,3)+' t ÷ Total Emissions '+fmt(inv.total,3)+' t × 100%</span> = <span class="r">'+rate+'</span></li><li><b>Total Emissions After Improvement</b>: <span class="eq">Total Emissions '+fmt(inv.total,3)+' t − Annual GHG Reduction '+fmt(at.carbon,3)+' t</span> = <span class="r">'+fmt(inv.total-at.carbon,3)+' t</span></li></ol></div>';
+h += '<div class="totgrid"><div class="tot"><span>Total Plant Emissions</span><b>'+fmt(inv.total,3)+' t</b></div><div class="tot"><span>Scope 1</span><b>'+fmt(inv.s1,3)+' t</b></div><div class="tot"><span>Scope 2</span><b>'+fmt(inv.s2,3)+' t</b></div><div class="tot"><span>Annual GHG Reduction After Improvement</span><b>'+fmt(at.carbon,3)+' t</b></div><div class="tot"><span>Annual Electricity Use After Improvement</span><b>'+fmt(num(S.elecKwhYear)-at.savedKwh)+' kWh</b></div><div class="tot"><span>Annual Electricity Cost After Improvement</span><b>'+fmt((num(S.elecKwhYear)-at.savedKwh)*price)+' NT$</b></div><div class="tot"><span>GHG Reduction Rate (Annual GHG Reduction ÷ Total Emissions)</span><b>'+rate+'</b></div><div class="tot"><span>Total Emissions After Improvement</span><b>'+fmt(inv.total-at.carbon,3)+' t</b></div></div>';
+h += '<div class="steps"><ol><li><b>Annual Electricity Use After Improvement</b>: <span class="eq">Annual Electricity Use '+fmt(num(S.elecKwhYear))+' kWh − Annual Electricity Savings '+fmt(at.savedKwh)+' kWh</span> = <span class="r">'+fmt(num(S.elecKwhYear)-at.savedKwh)+' kWh</span></li><li><b>Annual Electricity Cost After Improvement</b>: <span class="eq">Annual Electricity Use After Improvement '+fmt(num(S.elecKwhYear)-at.savedKwh)+' kWh × Electricity Price '+fmtPrice(price)+' NT$/kWh</span> = <span class="r">'+fmt((num(S.elecKwhYear)-at.savedKwh)*price)+' NT$</span></li><li><b>GHG Reduction Rate</b>: <span class="eq">Annual GHG Reduction '+fmt(at.carbon,3)+' t ÷ Total Emissions '+fmt(inv.total,3)+' t × 100%</span> = <span class="r">'+rate+'</span></li><li><b>Total Emissions After Improvement</b>: <span class="eq">Total Emissions '+fmt(inv.total,3)+' t − Annual GHG Reduction '+fmt(at.carbon,3)+' t</span> = <span class="r">'+fmt(inv.total-at.carbon,3)+' t</span></li></ol></div>';
 h += '<p class="note">(This report was automatically compiled by the Net-Zero Carbon Diagnosis platform; factor sources: Ministry of Environment GHG Emission Factor Management Table, Version 6.0.4, IPCC AR6 GWP, and the 2024 announced electricity emission factor. Before formal submission, please re-check the latest announced factors and on-site data, and have the diagnostic personnel review and sign the report.)</p>';
 h += '</div>';
 h += '<div class="repbar bot"><button type="button" class="btn btn-ghost btn-sm" data-collapse="1">Collapse Report</button></div>';
